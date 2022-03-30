@@ -3,10 +3,11 @@ package pl.boniaszczuk.springsecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.io.IOException;
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     TestApi testApi;
 
     @Autowired
@@ -35,7 +36,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             testApi.addAdminCount();
         }else if(userDetails.getAuthorities().toString().equals("[ROLE_USER]")){
             testApi.addUserCount();}
-        response.sendRedirect(request.getContextPath());
+        redirectStrategy.sendRedirect(request,response,"/hiUser");
     }
 
 

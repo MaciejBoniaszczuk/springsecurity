@@ -6,20 +6,25 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import java.util.Collections;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
 
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     TestApi testApi;
 
+    private UserDetailsService userDetailsService;
+
+
     @Autowired
-    public WebSecurityConfig(TestApi testApi) {
+    public WebSecurityConfig(TestApi testApi, UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
         this.testApi = testApi;
     }
 
@@ -34,20 +39,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new CustomAuthenticationSuccessHandler(testApi);
     }
 
+
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//
+//
+//        User userAdmin = new User("Jan"
+//                ,getPasswordEncoder().encode("Jan123")
+//                , Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN")));
+//        User userUser = new User("Karol"
+//                ,getPasswordEncoder().encode("Karol123")
+//                , Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
+//
+//
+//        auth.inMemoryAuthentication().withUser(userAdmin);
+//        auth.inMemoryAuthentication().withUser(userUser);
 
-
-        User userAdmin = new User("Jan"
-                ,getPasswordEncoder().encode("Jan123")
-                , Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN")));
-        User userUser = new User("Karol"
-                ,getPasswordEncoder().encode("Karol123")
-                , Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
-
-
-        auth.inMemoryAuthentication().withUser(userAdmin);
-        auth.inMemoryAuthentication().withUser(userUser);
+        auth.userDetailsService(userDetailsService);
 
     }
 
@@ -57,7 +66,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/hiAdmin").hasRole("ADMIN")
                 .antMatchers("/hiUser").hasAnyRole("USER", "ADMIN")
-                .and().formLogin().successHandler(authenticationSuccessHandlerHandler())
+                .antMatchers("/signUp").permitAll()
+                .and().formLogin().loginPage("/login")
+                .successHandler(authenticationSuccessHandlerHandler())
                 .and().logout().logoutSuccessUrl("/bye");
 
     }

@@ -19,18 +19,18 @@ public class TestApi {
     public String hiAdmin(Principal principal, Authentication authentication){
 
         return "Cześć admin: "+ principal.getName() +
-                "Uwierzytelniłeś się już: "+getCounter(authentication)+" razy";
+                " Uwierzytelniłeś się już: "+getCounter(authentication)+" razy";
     }
     @GetMapping("/hiUser")
     public String hiUser(Principal principal, Authentication authentication){
         return "Cześć user: "+principal.getName() +
-                "Uwierzytelniłeś się już: "+getCounter(authentication)+" razy";
+                " Uwierzytelniłeś się już: "+getCounter(authentication)+" razy";
     }
     @GetMapping("/hiUnknown")
     public String hiUnknown(@Nullable Principal principal,@Nullable Authentication authentication){
         if (principal != null){
             return "Cześć: "+principal.getName()  +
-                    "Uwierzytelniłeś się już: "+getCounter(authentication)+" razy";
+                    " Uwierzytelniłeś się już: "+getCounter(authentication)+" razy";
         }
         return "Cześć nieznajomy";
     }
